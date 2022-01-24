@@ -4,17 +4,20 @@ Configures GitLab projects through usage of GitLab API
 
 Contents
 ========
+- [gitlab-config](#gitlab-config)
+- [Contents](#contents)
+    - [Motivation](#motivation)
+    - [Usage](#usage)
 
-* [Motivation](#motivation)
-* [Usage](#usage)
+### Motivation
 
-### Motivation 
 ---
 Specifying configuration settings for every GitLab project required a lot of mouse clicking in my case. All settings were similar for all of the projects.
 
 I looked for a way to automate the configuration of GitLab projects conveniently. Therefore, came to the idea of using GitLab API for this task.
 
 ### Usage
+
 ---
 To start program, run `gitlab-config.sh` script.
 
