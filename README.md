@@ -19,7 +19,7 @@ Updates configuration of all projects in specified groups within GitLab.
 You can specify which GitLab settings to configure using appropriate optional arguments. 
 Currently 4 GibLab project configuration sections supported: Approval settings, Approval rules, Protected branches, General project settings. 
 
-Written by Kanat Aidarov ([@kanataidarov](https://github.com/kanataidarov))
+Written by Kanat Aidarov (https://github.com/kanataidarov)
 
 positional arguments:
   base_url              URL of GitLab e.g `https://git.beeline.kz`
