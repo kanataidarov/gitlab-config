@@ -1,9 +1,10 @@
 import requests
 import json
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from argparse import ArgumentParser
 from collections import defaultdict
 
 from const import clr
+from custom_argparse import CustomArgparseFormatter
 
 class GitlabConfig:
     """Updates configuration of all projects in specified groups within GitLab
@@ -141,7 +142,11 @@ class GitlabConfig:
 
     def parse_args(self): 
         """Parses Command Line arguments and replaces optional ones with default settings."""
-        arg_parser = ArgumentParser(description="Updates configuration of all projects in specified groups within GitLab", formatter_class=ArgumentDefaultsHelpFormatter)
+        arg_parser = ArgumentParser(description="Updates configuration of all projects in specified groups within GitLab. \
+            \nYou can specify which GitLab settings to configure using appropriate optional arguments. \
+            \nCurrently 4 GibLab project configuration sections supported: `Approval settings`, `Approval rules`, `Protected branches`, `General project settings`. \
+            \n\nWritten by Kanat Aidarov (https://github.com/kanataidarov)", \
+            formatter_class=CustomArgparseFormatter)
 
         # positional arguments
         arg_parser.add_argument("base_url", help="URL of GitLab  e.g `https://git.beeline.kz`")
