@@ -22,24 +22,24 @@ Currently 4 GibLab project configuration sections supported: Approval settings, 
 Written by Kanat Aidarov (https://github.com/kanataidarov)
 
 positional arguments:
-  base_url              URL of GitLab e.g `https://git.beeline.kz`
+  base_url              URL of GitLab e.g `https://github.kz`
   token                 Personal Access Token, required to access GitLab API
-  namespace_paths       List of Groups (comma separated) e.g `esb-gov,`
+  namespace_paths       List of Groups (comma separated) e.g `npd-gov,npd`
 
 optional arguments:
   -h, --help            show this help message and exit
-  --approval_settings   Project's approval settings (default: {"reset_approvals_on_push": true,
+  --approval_settings   Projects approval settings (default: {"reset_approvals_on_push": true,
                         "disable_overriding_approvers_per_merge_request": true, "merge_requests_author_approval": false,
                         "merge_requests_disable_committers_approval": true})
-  --approval_rules      Project's default approval rules (default: {"name": "Any name", "rule_type": "any_approver", "approvals_required":
+  --approval_rules      Projects default approval rules (default: {"name": "Any name", "rule_type": "any_approver", "approvals_required":
                         1})
-  --protected_branches  Project's protected branches (default:
+  --protected_branches  Projects protected branches (default:
                         [{"name":"master","push_access_levels":[{"access_level":0,"access_level_description":"No one"}],"merge_access_levels
                         ":[{"access_level":40,"access_level_description":"Maintainers"}],"allow_force_push":false,"code_owner_approval_requi
                         red":false},{"name":"dev","push_access_levels":[{"access_level":0,"access_level_description":"No one"}],"merge_acces
                         s_levels":[{"access_level":40,"access_level_description":"Maintainers"}],"allow_force_push":false,"code_owner_approv
                         al_required":false}])
-  --project_settings    Project's global settings (default: {"allow_merge_on_skipped_pipeline":false,"only_allow_merge_if_all_discussions_ar
+  --project_settings    Projects global settings (default: {"allow_merge_on_skipped_pipeline":false,"only_allow_merge_if_all_discussions_ar
                         e_resolved":true,"only_allow_merge_if_pipeline_succeeds":true,"remove_source_branch_after_merge":true,"squash_option
                         ":"default_on"})
 

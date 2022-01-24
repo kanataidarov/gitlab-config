@@ -149,9 +149,9 @@ class GitlabConfig:
             formatter_class=CustomArgparseFormatter)
 
         # positional arguments
-        arg_parser.add_argument("base_url", help="URL of GitLab  e.g `https://git.beeline.kz`")
+        arg_parser.add_argument("base_url", help="URL of GitLab  e.g `https://github.kz`")
         arg_parser.add_argument("token", help="Personal Access Token, required to access GitLab API")
-        arg_parser.add_argument("namespace_paths", help="List of Groups (comma separated)  e.g `esb-gov,`")
+        arg_parser.add_argument("namespace_paths", help="List of Groups (comma separated)  e.g `npd-gov,npd`")
 
         # optional arguments 
         arg_parser.add_argument("--approval_settings", 
