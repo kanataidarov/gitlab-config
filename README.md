@@ -2,6 +2,12 @@
 
 Configures GitLab projects through usage of GitLab API
 
+Contents
+========
+
+* [Motivation](#motivation)
+* [Usage](#usage)
+
 ### Motivation 
 ---
 Specifying configuration settings for every GitLab project required a lot of mouse clicking in my case. All settings were similar for all of the projects.
