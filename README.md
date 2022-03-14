@@ -38,17 +38,9 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  --approval_settings   Projects approval settings (default: {"reset_approvals_on_push": true,
-                        "disable_overriding_approvers_per_merge_request": true, "merge_requests_author_approval": false,
-                        "merge_requests_disable_committers_approval": true})
-  --approval_rules      Projects default approval rules (default: {"name": "Any name", "rule_type": "any_approver", "approvals_required":
-                        1})
-  --protected_branches  Projects protected branches (default:
-                        [{"name":"master","push_access_levels":[{"access_level":0,"access_level_description":"No one"}],"merge_access_levels
-                        ":[{"access_level":40,"access_level_description":"Maintainers"}],"allow_force_push":false,"code_owner_approval_requi
-                        red":false},{"name":"dev","push_access_levels":[{"access_level":0,"access_level_description":"No one"}],"merge_acces
-                        s_levels":[{"access_level":40,"access_level_description":"Maintainers"}],"allow_force_push":false,"code_owner_approv
-                        al_required":false}])
+  --approval_settings   Projects approval settings (default: {"reset_approvals_on_push": true, "disable_overriding_approvers_per_merge_request": true, "merge_requests_author_approval": false,"merge_requests_disable_committers_approval": true})
+  --approval_rules      Projects default approval rules (default: {"name": "Any name", "rule_type": "any_approver", "approvals_required": 1})
+  --protected_branches  Projects protected branches (default: [{"name":"master","push_access_levels":[{"access_level":0,"access_level_description":"No one"}],"merge_access_levels":[{"access_level":40,"access_level_description":"Maintainers"}],"allow_force_push":false,"code_owner_approval_required":false},{"name":"dev","push_access_levels":[{"access_level":0,"access_level_description":"No one"}],"merge_access_levels":[{"access_level":40,"access_level_description":"Maintainers"}],"allow_force_push":false,"code_owner_approval_required":false}])
   --project_settings    Projects global settings (default: {"allow_merge_on_skipped_pipeline":false,"only_allow_merge_if_all_discussions_are_resolved":true,"only_allow_merge_if_pipeline_succeeds":true,"remove_source_branch_after_merge":true,"squash_option":"default_on","merge_method":"ff"})
 
 ```
