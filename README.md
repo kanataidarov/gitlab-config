@@ -34,6 +34,7 @@ positional arguments:
   base_url              URL of GitLab e.g `https://github.kz`
   token                 Personal Access Token, required to access GitLab API
   namespace_paths       List of Groups (comma separated) e.g `npd-gov,npd`
+  project_ids           List of Project Ids (comma separated) e.g `1,2,3`
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -48,8 +49,6 @@ optional arguments:
                         red":false},{"name":"dev","push_access_levels":[{"access_level":0,"access_level_description":"No one"}],"merge_acces
                         s_levels":[{"access_level":40,"access_level_description":"Maintainers"}],"allow_force_push":false,"code_owner_approv
                         al_required":false}])
-  --project_settings    Projects global settings (default: {"allow_merge_on_skipped_pipeline":false,"only_allow_merge_if_all_discussions_ar
-                        e_resolved":true,"only_allow_merge_if_pipeline_succeeds":true,"remove_source_branch_after_merge":true,"squash_option
-                        ":"default_on"})
+  --project_settings    Projects global settings (default: {"allow_merge_on_skipped_pipeline":false,"only_allow_merge_if_all_discussions_are_resolved":true,"only_allow_merge_if_pipeline_succeeds":true,"remove_source_branch_after_merge":true,"squash_option":"default_on","merge_method":"ff"})
 
 ```

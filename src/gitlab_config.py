@@ -2,8 +2,9 @@ import requests
 import json
 from argparse import ArgumentParser
 from collections import defaultdict
+import csv
 
-from const import clr
+from const import clr, Roles, Optionals, Positionals
 from custom_argparse import CustomArgparseFormatter
 
 class GitlabConfig:
@@ -17,6 +18,7 @@ class GitlabConfig:
     def __init__(self, default_branch="dev"):
         self.updated = defaultdict(dict)
         self.default_branch = default_branch
+        self.roles = defaultdict(str)
 
 
     def select_project_ids(self, args): 
@@ -24,13 +26,15 @@ class GitlabConfig:
         :args Command Line arguments, includes defaults of optional arguments. 
         :return List of GitLab Ids of projects belonging to specified GitLab Groups. 
         """
-        projects_url = args["base_url"] + "/projects"
-        response = requests.get(projects_url, headers=args["headers"])
-        if not response.ok: 
-            raise Exception("Undesired ({response.status_code}) response from `{projects_url}`")
-        projects = response.json()
+        result = []
 
-        return [entry["id"] for entry in projects if entry["path_with_namespace"].split("/")[0] in args["namespace_paths"]]
+        if len(args["namespace_paths"]) > 0: 
+            result = [entry["id"] for entry in self.response_json(args, "projects") 
+                if entry["path_with_namespace"].split("/")[0] in args["namespace_paths"]]
+        elif len(args["project_ids"]) > 0:
+            result = args["project_ids"]
+
+        return result
 
 
     def update_approval_settings(self, args, selected_project_ids): 
@@ -38,10 +42,9 @@ class GitlabConfig:
         :args Command Line arguments, includes defaults of optional arguments. 
         :selected_project_ids List of GitLab Ids of projects belonging to specified GitLab Groups. 
         """
-        approvals_base_url = args["base_url"] + "/projects/{}/approvals"
 
         for project_id in selected_project_ids: 
-            approvals_url = approvals_base_url.format(project_id)
+            approvals_url = f"{args['base_url']}/projects/{project_id}/approvals"
 
             response = requests.post(approvals_url, headers=args["headers"], data=args["approval_settings"])
             
@@ -53,10 +56,9 @@ class GitlabConfig:
         :args Command Line arguments, includes defaults of optional arguments. 
         :selected_project_ids List of GitLab Ids of projects belonging to specified GitLab Groups. 
         """
-        approval_rules_base_url = args["base_url"] + "/projects/{}/approval_rules"
 
         for project_id in selected_project_ids: 
-            approval_rules_url = approval_rules_base_url.format(project_id)
+            approval_rules_url = f"{args['base_url']}/projects/{project_id}/approval_rules"
 
             response = requests.get(approval_rules_url, headers=args["headers"])
             default_rule = [entry for entry in response.json() if entry["rule_type"]=="any_approver"]
@@ -66,7 +68,7 @@ class GitlabConfig:
             elif len(default_rule) == 0: 
                 response = requests.post(approval_rules_url, headers=args["headers"], data=args["approval_rules"])
             else: 
-                raise Exception("Project {project_id} cannot contain more than 1 default approval rule")
+                raise Exception(f"Project {project_id} cannot contain more than 1 default approval rule")
             
             self.dump_response(response, project_id, "Approval rules", {200, 201})
 
@@ -76,15 +78,16 @@ class GitlabConfig:
         :args Command Line arguments, includes defaults of optional arguments. 
         :selected_project_ids List of GitLab Ids of projects belonging to specified GitLab Groups. 
         """
-        protected_branches_base_url = args["base_url"] + "/projects/{}/protected_branches"
 
         for project_id in selected_project_ids: 
-            protected_branches_url = protected_branches_base_url.format(project_id)
+            protected_branches_url = f"{args['base_url']}/projects/{project_id}/protected_branches"
 
             response = requests.get(protected_branches_url, headers=args["headers"])
             protected_branches = response.json()
 
-            for candidate in args["protected_branches"]: 
+            for candidate in args["protected_branches"]:
+                """TODO: check if branch exists before protecting it
+                """ 
                 if len( [branch for branch in protected_branches if branch["name"] == candidate["name"]] ) == 0:
                     protected_branches_url = f'{protected_branches_url}?name={candidate["name"]}\
                         &push_access_level={candidate["push_access_levels"][0]["access_level"]}\
@@ -100,7 +103,6 @@ class GitlabConfig:
         :args Command Line arguments, includes defaults of optional arguments. 
         :selected_project_ids List of GitLab Ids of projects belonging to specified GitLab Groups. 
         """
-        project_settings_base_url = args["base_url"] + "/projects/{}"
 
         for project_id in selected_project_ids: 
             """ TODO: fix bug when defaulted branch does not exist
@@ -111,11 +113,59 @@ class GitlabConfig:
                     args["project_settings"]["default_branch"] = self.default_branch
             """
 
-            project_settings_url = project_settings_base_url.format(project_id)
+            project_settings_url = f"{args['base_url']}/projects/{project_id}"
             response = requests.put(project_settings_url, headers=args["headers"], data=args["project_settings"])
 
             self.dump_response(response, project_id, "Project settings", {200})
 
+
+    def csv_group_members(self, args, selected_group_ids, out_path="Members.csv"): 
+        """Exports members of specified groups into csv. 
+        :args Command Line arguments, includes defaults of optional arguments. 
+        :selected_group_ids List of Ids for selected Gitlab Groups.
+        :out_path Path to the output file in `csv` format.  
+        """
+        file = open(out_path, mode="w")
+        writer = csv.writer(file, delimiter=";")
+        for group_id in selected_group_ids: 
+            members = self.response_json(args, f"groups/{group_id}/pending_members")
+            
+            print(len(members))
+            for member in members: 
+                writer.writerow([ member["username"], Roles.TABLE[int(member["access_level"])] ])
+
+        file.close()
+
+    
+    def projects_without_description(self, args): 
+        projects = self.response_json(args, "projects")
+
+        for project in projects:
+            if not project["description"]:
+                print(project["path_with_namespace"])
+
+    
+    def select_group_ids(self, args): 
+        """Selects GitLab Ids of groups specified in `namespace_paths` CL-argument.  
+        :args Command Line arguments, includes defaults of optional arguments. 
+        :return List of GitLab Ids of groups by their names. 
+        """
+        groups = self.response_json(args, "groups")
+
+        return [entry["id"] for entry in groups if entry["path"] in args["namespace_paths"]]
+
+
+    def response_json(self, args, path): 
+        """Gets response as json by specified url.  
+        :args Command Line arguments, includes defaults of optional arguments. 
+        :path Subdirectory (section) with which to complete url. 
+        :return response as json from specified url. 
+        """
+        final_url = f"{args['base_url']}/{path}"
+        response = requests.get(final_url, headers=args["headers"])
+        if not response.ok: 
+            raise Exception(f"Undesired ({response.status_code}) response from `{final_url}`")
+        return response.json()
 
     def dump_response(self, response, project_id, config_name, desired_states={201}): 
         """Gathers successful response into `updated` attribute, otherwise throws errorneus response from GitLab. 
@@ -149,33 +199,30 @@ class GitlabConfig:
             formatter_class=CustomArgparseFormatter)
 
         # positional arguments
-        arg_parser.add_argument("base_url", help="URL of GitLab  e.g `https://github.kz`")
-        arg_parser.add_argument("token", help="Personal Access Token, required to access GitLab API")
-        arg_parser.add_argument("namespace_paths", help="List of Groups (comma separated)  e.g `npd-gov,npd`")
+        arg_parser.add_argument(Positionals.BASE_URL["name"], help=Positionals.BASE_URL["help"])
+        arg_parser.add_argument(Positionals.TOKEN["name"], help=Positionals.TOKEN["help"])
 
         # optional arguments 
-        arg_parser.add_argument("--approval_settings", 
-            default='{"reset_approvals_on_push": true, "disable_overriding_approvers_per_merge_request": true, "merge_requests_author_approval": false, "merge_requests_disable_committers_approval": true}', 
-            action="store_true", help="Project's approval settings")
-        arg_parser.add_argument("--approval_rules", 
-            default='{"name": "Any name", "rule_type": "any_approver", "approvals_required": 1}', 
-            action="store_true", help="Project's default approval rules")
-        arg_parser.add_argument("--protected_branches",
-            default='[{"name":"master","push_access_levels":[{"access_level":0,"access_level_description":"No one"}],"merge_access_levels":[{"access_level":40,"access_level_description":"Maintainers"}],"allow_force_push":false,"code_owner_approval_required":false},{"name":"dev","push_access_levels":[{"access_level":0,"access_level_description":"No one"}],"merge_access_levels":[{"access_level":40,"access_level_description":"Maintainers"}],"allow_force_push":false,"code_owner_approval_required":false}]',
-            action="store_true", help="Project's protected branches")
-        arg_parser.add_argument("--project_settings", 
-            default='{"allow_merge_on_skipped_pipeline":false,"only_allow_merge_if_all_discussions_are_resolved":true,"only_allow_merge_if_pipeline_succeeds":true,"remove_source_branch_after_merge":true,"squash_option":"default_on"}',
-            action="store_true", help="Project's global settings")
+        arg_parser.add_argument(Optionals.NAMESPACE_PATHS["name"], default=Optionals.NAMESPACE_PATHS["default"], type=str, help=Optionals.NAMESPACE_PATHS["help"])
+        arg_parser.add_argument(Optionals.PROJECT_IDS["name"], default=Optionals.PROJECT_IDS["default"], type=str, help=Optionals.PROJECT_IDS["help"])
+        arg_parser.add_argument(Optionals.APPROVAL_SETTINGS["name"], default=Optionals.APPROVAL_SETTINGS["default"], type=str, help=Optionals.APPROVAL_SETTINGS["help"])
+        arg_parser.add_argument(Optionals.APPROVAL_RULES["name"], default=Optionals.APPROVAL_RULES["default"], type=str, help=Optionals.APPROVAL_RULES["help"])
+        arg_parser.add_argument(Optionals.PROTECTED_BRANCHES["name"], default=Optionals.PROTECTED_BRANCHES["default"], type=str, help=Optionals.PROTECTED_BRANCHES["help"])
+        arg_parser.add_argument(Optionals.PROJECT_SETTINGS["name"], default=Optionals.PROJECT_SETTINGS["default"], type=str, help=Optionals.PROJECT_SETTINGS["help"])
 
         parsed_args = arg_parser.parse_args()
         
         args = {}
-        args["base_url"] = parsed_args.base_url+"/api/v4" 
-        args["headers"] = {"PRIVATE-TOKEN": parsed_args.token } 
-        args["namespace_paths"] = parsed_args.namespace_paths.split(",") 
+        args["base_url"] = parsed_args.base_url+"/api/v4"
+        args["headers"] = {"PRIVATE-TOKEN": parsed_args.token }
+        args["namespace_paths"] = list(filter(None, parsed_args.namespace_paths.split(",")))
+        args["project_ids"] = list(filter(None, parsed_args.project_ids.split(",")))
         args["approval_settings"] = json.loads(parsed_args.approval_settings)
         args["approval_rules"] = json.loads(parsed_args.approval_rules)
         args["protected_branches"] = json.loads(parsed_args.protected_branches)
         args["project_settings"] = json.loads(parsed_args.project_settings)
+
+        if all(len(entries)>0 for entries in (args["namespace_paths"], args["project_ids"])):
+            arg_parser.error("Arguments `namespace_paths` and `project_ids` are mutually exclusive.")
         
         return args
