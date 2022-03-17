@@ -78,23 +78,26 @@ class GitlabConfig:
         :args Command Line arguments, includes defaults of optional arguments. 
         :selected_project_ids List of GitLab Ids of projects belonging to specified GitLab Groups. 
         """
-
         for project_id in selected_project_ids: 
+            branches_url = f"{args['base_url']}/projects/{project_id}/repository/branches"
             protected_branches_url = f"{args['base_url']}/projects/{project_id}/protected_branches"
+
+            response = requests.get(branches_url, headers=args["headers"])
+            branches = response.json()
 
             response = requests.get(protected_branches_url, headers=args["headers"])
             protected_branches = response.json()
 
             for candidate in args["protected_branches"]:
-                """TODO: check if branch exists before protecting it
-                """ 
-                if len( [branch for branch in protected_branches if branch["name"] == candidate["name"]] ) == 0:
-                    protected_branches_url = f'{protected_branches_url}?name={candidate["name"]}\
+                # if branch exists and its not protected them make candidate protected
+                if len( [branch for branch in branches if branch["name"] == candidate["name"]] ) == 1 \
+                        and len( [branch for branch in protected_branches if branch["name"] == candidate["name"]] ) == 0:
+                    protected_branch_url = f'{protected_branches_url}?name={candidate["name"]}\
                         &push_access_level={candidate["push_access_levels"][0]["access_level"]}\
                         &merge_access_level={candidate["merge_access_levels"][0]["access_level"]}\
                         &allow_force_push={candidate["allow_force_push"]}\
                         &code_owner_approval_required={candidate["code_owner_approval_required"]}'
-                    response = requests.post(protected_branches_url, headers=args["headers"], data=candidate)
+                    response = requests.post(protected_branch_url, headers=args["headers"], data=candidate)
                     self.dump_response(response, project_id, "Protected branches", {201})
 
 

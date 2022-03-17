@@ -10,7 +10,7 @@ def main():
     gconf.update_approval_settings(args, selected_project_ids)   
     gconf.update_approval_rules(args, selected_project_ids)
     gconf.update_project_settings(args, selected_project_ids)
-    # gconf.update_protected_branches(args, selected_project_ids)
+    gconf.update_protected_branches(args, selected_project_ids)
     
     # selected_group_ids = gconf.select_group_ids(args)
     # gconf.csv_group_members(args, selected_group_ids, out_path="Members.csv")
