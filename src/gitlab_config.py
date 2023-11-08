@@ -1,11 +1,14 @@
-import requests
-import json
 from argparse import ArgumentParser
 from collections import defaultdict
-import csv
-
-from const import clr, Roles, Optionals, Positionals
+from const import clr, Optionals, Positionals, Roles
 from custom_argparse import CustomArgparseFormatter
+from datetime import datetime, timedelta, timezone
+
+import csv
+import json
+import re
+import requests
+
 
 class GitlabConfig:
     """Updates configuration of all projects in specified groups within GitLab
@@ -156,6 +159,46 @@ class GitlabConfig:
         groups = self.response_json(args, "groups")
 
         return [entry["id"] for entry in groups if entry["path"] in args["namespace_paths"]]
+    
+    def select_branch_names(self, args, selected_project_ids, active=True): 
+        """Selects Branch names for given Project Id. 
+        :args Command Line arguments, includes defaults of optional arguments. 
+        :return List of GitLab Branch names for given Project Id. 
+        """
+        for project_id in selected_project_ids: 
+            branch_names_url = f"{args['base_url']}/projects/{project_id}/repository/branches?per_page=999&page=1"
+            response = requests.get(branch_names_url, headers=args["headers"])
+
+            result = []
+            if active: 
+                result = [entry["name"] for entry in response.json() if not self.is_stale_branch(entry)]
+            else: 
+                result = [entry["name"] for entry in response.json() if self.is_stale_branch(entry)]
+
+            return result
+
+    def is_stale_branch(self, branch_entry, previous_days=90): 
+        """Checks if branch that has not had any commits in the previous {:previous_days} days.
+        :branch_entry Object containing array of commit objects.
+        :previous_days Number of days that branch should not have any new commits. 90 days by default.
+        :return Boolean determining whether branch's last commit not older than specified number of days. 
+        """
+        last_commit_dt = datetime.fromisoformat(branch_entry["commit"]["created_at"])
+        previous_days_ago_dt = datetime.now(timezone(timedelta(hours=6)))-timedelta(days=previous_days)
+        return previous_days_ago_dt > last_commit_dt
+    
+    def duplicate_branches_with_new_names(self, args, selected_project_ids, branch_names):
+        """TODO
+        """
+        for project_id in selected_project_ids: 
+            for branch_name in branch_names: 
+                create_branch_url = f"{args['base_url']}/projects/{project_id}/repository/branches"
+                branch_name_parts = branch_name.split("feature")
+                if len(branch_name_parts) == 2:
+                    new_branch_name = "tz" + branch_name_parts[1]
+                    create_branch_url += f"?branch={new_branch_name}&ref={branch_name}"
+                    response = requests.post(create_branch_url, headers=args["headers"])
+                    print(response)
 
 
     def response_json(self, args, path): 
