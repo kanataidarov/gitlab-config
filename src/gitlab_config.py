@@ -187,18 +187,23 @@ class GitlabConfig:
         previous_days_ago_dt = datetime.now(timezone(timedelta(hours=6)))-timedelta(days=previous_days)
         return previous_days_ago_dt > last_commit_dt
     
-    def duplicate_branches_with_new_names(self, args, selected_project_ids, branch_names):
-        """TODO
+    def duplicate_branches_with_new_names(self, args, selected_project_ids, branch_names, regex, replacement_str):
+        """Creates new branches from {:branch_names} using {:regex} and {:replacement_str}.
+        :args Command Line arguments, includes defaults of optional arguments. 
+        :selected_group_ids List of Ids for selected Gitlab Groups.
+        :branch_names Names of the branches to duplicate. 
+        :regex Regular expression which finds part of branch name to replace when duplicating.
+        :replacement_str New part of a branch name. 
         """
         for project_id in selected_project_ids: 
             for branch_name in branch_names: 
                 create_branch_url = f"{args['base_url']}/projects/{project_id}/repository/branches"
-                branch_name_parts = branch_name.split("feature")
-                if len(branch_name_parts) == 2:
-                    new_branch_name = "tz" + branch_name_parts[1]
+                match = re.compile(regex).search(branch_name)
+                if match:
+                    new_branch_name = re.sub(regex, replacement_str, branch_name)
                     create_branch_url += f"?branch={new_branch_name}&ref={branch_name}"
                     response = requests.post(create_branch_url, headers=args["headers"])
-                    print(response)
+                    self.dump_response(response, project_id, "Duplicated branches", desired_states={201})
 
 
     def response_json(self, args, path): 
