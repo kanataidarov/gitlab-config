@@ -205,6 +205,30 @@ class GitlabConfig:
                     response = requests.post(create_branch_url, headers=args["headers"])
                     self.dump_response(response, project_id, "Duplicated branches", desired_states={201})
 
+    def select_commits_by_branch(self, args, selected_project_ids, branch_name): 
+        """Selects all commits within given {:branch_name}
+        :args Command Line arguments, includes defaults of optional arguments. 
+        :selected_group_ids List of Ids for selected Gitlab Groups.
+        :branch_name Name of a branch with commits.
+        :return Array of commit objects, containing id, message, creation datetime 
+        """
+        for project_id in selected_project_ids:
+            select_commits_url = f"{args['base_url']}/projects/{project_id}/repository/commits?ref_name={branch_name}"
+            response = requests.get(select_commits_url, headers=args["headers"])
+            return [{"id": entry["id"], "message": entry["message"], "created_at": entry["created_at"]} for entry in response.json()]
+        
+    def select_branch_names_with_commits(self, args, selected_project_ids, active=False): 
+        """Selects Branch names for given Project Id including their commit objects. 
+        :args Command Line arguments, includes defaults of optional arguments. 
+        :return List of GitLab Branch names for given Project Id and all commit objects within them. 
+        """
+        branch_names = self.select_branch_names(args, selected_project_ids, active)
+        branches_n_their_commits = {}
+        for branch_name in branch_names:
+            branches_n_their_commits[branch_name] = self.select_commits_by_branch(args, selected_project_ids, branch_name)
+        
+        return branches_n_their_commits
+
 
     def response_json(self, args, path): 
         """Gets response as json by specified url.  

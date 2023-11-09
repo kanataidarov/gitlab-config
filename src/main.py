@@ -16,6 +16,8 @@ def main():
     # gconf.csv_group_members(args, selected_group_ids, out_path="Members.csv")
 
     # branch_names = gconf.select_branch_names(args, selected_project_ids, active=True)
+    # branches_n_their_commits = gconf.select_branch_names_with_commits(args, selected_project_ids, active=False)
+
     # gconf.duplicate_branches_with_new_names(args, selected_project_ids, branch_names, r"^.*?feature", "tz")
 
     gconf.print_response()
