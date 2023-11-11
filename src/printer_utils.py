@@ -29,7 +29,7 @@ class Printer:
         return response.json()
 
 
-    def dump_response(self, response, project_id, config_name, desired_states={201}): 
+    def dump_response(self, response, project_id, config_name, desired_states={200, 201, 204}): 
         """Gathers successful response into `updated` attribute, otherwise throws errorneus response from GitLab. 
         :response Response obtained from last GitLab API call. 
         :project_id GitLab Id of the project currently being configured. 

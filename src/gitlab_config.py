@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from printer_utils import Printer
 from project_settings import ProjectSettings
+from urllib.parse import quote_plus
 
 import re
 import requests
@@ -59,12 +60,12 @@ class GitlabConfig:
                 print(project["path_with_namespace"])
 
 
-    def select_branch_names(self, selected_project_ids, active=True): 
-        """Selects Branch names for given Project Id. 
+    def select_branch_names(self, selected_pids, active=True): 
+        """Selects Branch names for given {:selected_pids}. 
         :args Command Line arguments, includes defaults of optional arguments. 
         :return List of GitLab Branch names for given Project Id. 
         """
-        for project_id in selected_project_ids: 
+        for project_id in selected_pids: 
             branch_names_url = f"projects/{project_id}/repository/branches"
             response_json = self.printer.response_json(self.args, branch_names_url)
 
@@ -88,15 +89,15 @@ class GitlabConfig:
         return previous_days_ago_dt > last_commit_dt
     
 
-    def duplicate_branches_with_new_names(self, selected_project_ids, branch_names, regex, replacement_str):
-        """Creates new branches from {:branch_names} using {:regex} and {:replacement_str}.
+    def duplicate_branches_with_new_names(self, selected_pids, branch_names, regex, replacement_str):
+        """Creates new branches from {:selected_pids} and {:branch_names} using {:regex} and {:replacement_str}.
         :args Command Line arguments, includes defaults of optional arguments. 
         :selected_group_ids List of Ids for selected Gitlab Groups.
         :branch_names Names of the branches to duplicate. 
         :regex Regular expression which finds part of branch name to replace when duplicating.
         :replacement_str New part of a branch name. 
         """
-        for project_id in selected_project_ids: 
+        for project_id in selected_pids: 
             for branch_name in branch_names: 
                 create_branch_url = f"{self.args['base_url']}/projects/{project_id}/repository/branches"
                 match = re.compile(regex).search(branch_name)
@@ -107,35 +108,55 @@ class GitlabConfig:
                     self.printer.dump_response(response, project_id, "Duplicated branches", desired_states={201})
 
 
-    def select_commits_by_branch(self, selected_project_ids, branch_name): 
-        """Selects all commits within given {:branch_name}
+    def select_commits_by_branch(self, selected_pids, branch_name): 
+        """Selects all commits within given {:selected_pids} and {:branch_name}
         :args Command Line arguments, includes defaults of optional arguments. 
         :selected_group_ids List of Ids for selected Gitlab Groups.
         :branch_name Name of a branch with commits.
         :return Array of commit objects, containing id, message, creation datetime 
         """
-        for project_id in selected_project_ids:
+        for project_id in selected_pids:
             select_commits_url = f"{self.args['base_url']}/projects/{project_id}/repository/commits?ref_name={branch_name}"
             response = requests.get(select_commits_url, headers=self.args["headers"])
             return [{"id": entry["id"], "message": entry["message"], "created_at": entry["created_at"]} for entry in response.json()]
 
 
-    def select_branch_names_with_commits(self, selected_project_ids, active=False): 
-        """Selects Branch names for given Project Id including their commit objects. 
+    def select_branch_names_with_commits(self, selected_pids, active=False): 
+        """Selects Branch names for given {:selected_pids} including their commit objects. 
         :args Command Line arguments, includes defaults of optional arguments. 
         :return List of GitLab Branch names for given Project Id and all commit objects within them. 
         """
-        branch_names = self.select_branch_names(selected_project_ids, active)
+        branch_names = self.select_branch_names(selected_pids, active)
         branches_n_their_commits = {}
         for branch_name in branch_names:
-            branches_n_their_commits[branch_name] = self.select_commits_by_branch(selected_project_ids, branch_name)
+            branches_n_their_commits[branch_name] = self.select_commits_by_branch(selected_pids, branch_name)
         
         return branches_n_their_commits
 
 
-    def update_settings(self, selected_project_ids):
-        self.ps.update_approval_settings(selected_project_ids)   
-        self.ps.update_approval_rules(selected_project_ids)
-        self.ps.update_project_settings(selected_project_ids)
-        self.ps.update_protected_branches(selected_project_ids)
+    def update_settings(self, selected_pids):
+        self.ps.update_approval_settings(selected_pids)   
+        self.ps.update_approval_rules(selected_pids)
+        self.ps.update_project_settings(selected_pids)
+        self.ps.update_protected_branches(selected_pids)
     
+
+    def delete_branches_by_regex(self, selected_pids, branch_names, regex):
+        """Delete all branches with {:branch_names} within {:selected_pids} using {:regex}.
+        :args Command Line arguments, includes defaults of optional arguments. 
+        :selected_group_ids List of Ids for selected Gitlab Groups.
+        :branch_names Names of the branches within {:selected_pids}. 
+        :regex Regular expression which matches branch name to determine whether to delete given branch.
+        """
+        for project_id in selected_pids: 
+            for branch_name in branch_names: 
+                match = re.compile(regex).search(branch_name)
+                if match:
+                    delete_branch_url = f"{self.args['base_url']}/projects/{project_id}/repository/branches/{quote_plus(branch_name)}"
+                    response = requests.delete(delete_branch_url, headers=self.args["headers"])
+                    print(response)
+
+
+    def print_response(self): 
+        self.printer.print_response()
+

@@ -15,13 +15,13 @@ class ProjectSettings:
         self.printer = Printer()
 
     
-    def update_approval_settings(self, selected_project_ids): 
+    def update_approval_settings(self, selected_pids): 
         """Updates Approval Settings subsection (in General section) for specified GitLab Ids. 
         :args Command Line arguments, includes defaults of optional arguments. 
-        :selected_project_ids List of GitLab Ids of projects belonging to specified GitLab Groups. 
+        :selected_pids List of GitLab Ids of projects belonging to specified GitLab Groups. 
         """
 
-        for project_id in selected_project_ids: 
+        for project_id in selected_pids: 
             approvals_url = f"{self.args['base_url']}/projects/{project_id}/approvals"
 
             response = requests.post(approvals_url, headers=self.args["headers"], data=self.args["approval_settings"])
@@ -29,13 +29,13 @@ class ProjectSettings:
             self.printer.dump_response(response, project_id, "Approval settings", {201})
 
 
-    def update_approval_rules(self, selected_project_ids): 
+    def update_approval_rules(self, selected_pids): 
         """Updates Approval Rules subsection (in General section) for specified GitLab Ids. 
         :args Command Line arguments, includes defaults of optional arguments. 
-        :selected_project_ids List of GitLab Ids of projects belonging to specified GitLab Groups. 
+        :selected_pids List of GitLab Ids of projects belonging to specified GitLab Groups. 
         """
 
-        for project_id in selected_project_ids: 
+        for project_id in selected_pids: 
             approval_rules_url = f"{self.args['base_url']}/projects/{project_id}/approval_rules"
 
             response = requests.get(approval_rules_url, headers=self.args["headers"])
@@ -51,12 +51,12 @@ class ProjectSettings:
             self.printer.dump_response(response, project_id, "Approval rules", {200, 201})
 
 
-    def update_protected_branches(self, selected_project_ids):
+    def update_protected_branches(self, selected_pids):
         """Updates Protected Branches subsection (in General section) for specified GitLab Ids. 
         :args Command Line arguments, includes defaults of optional arguments. 
-        :selected_project_ids List of GitLab Ids of projects belonging to specified GitLab Groups. 
+        :selected_pids List of GitLab Ids of projects belonging to specified GitLab Groups. 
         """
-        for project_id in selected_project_ids: 
+        for project_id in selected_pids: 
             branches_url = f"{self.args['base_url']}/projects/{project_id}/repository/branches"
             protected_branches_url = f"{self.args['base_url']}/projects/{project_id}/protected_branches"
 
@@ -79,13 +79,13 @@ class ProjectSettings:
                     self.printer.dump_response(response, project_id, "Protected branches", {201})
 
 
-    def update_project_settings(self, selected_project_ids):
+    def update_project_settings(self, selected_pids):
         """Updates overall Project Settings for specified GitLab Ids. 
         :args Command Line arguments, includes defaults of optional arguments. 
-        :selected_project_ids List of GitLab Ids of projects belonging to specified GitLab Groups. 
+        :selected_pids List of GitLab Ids of projects belonging to specified GitLab Groups. 
         """
 
-        for project_id in selected_project_ids: 
+        for project_id in selected_pids: 
             """ TODO: fix bug when defaulted branch does not exist
             default_branch_url = project_settings_base_url.format(str(project_id)+"/repository/branches/"+self.default_branch)
             response = requests.get(default_branch_url, headers=args["headers"])
