@@ -1,5 +1,3 @@
-from printer_utils import Printer
-
 import requests
 
 class ProjectSettings:
@@ -10,9 +8,9 @@ class ProjectSettings:
         printer: Printer object from printer_utils.
     """
 
-    def __init__(self, args):
+    def __init__(self, args, printer):
         self.args = args
-        self.printer = Printer()
+        self.printer = printer
 
     
     def update_approval_settings(self, selected_pids): 

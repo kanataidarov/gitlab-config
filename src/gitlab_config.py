@@ -21,7 +21,7 @@ class GitlabConfig:
         self.args = args
         self.default_branch = default_branch
         self.printer = Printer()
-        self.ps = ProjectSettings(self.args)
+        self.ps = ProjectSettings(self.args, self.printer)
 
 
     def select_project_ids(self): 
