@@ -18,13 +18,15 @@ class Optionals:
         "default": '{"allow_merge_on_skipped_pipeline":false,"only_allow_merge_if_all_discussions_are_resolved":true,"only_allow_merge_if_pipeline_succeeds":true,"remove_source_branch_after_merge":true,"squash_option":"default_on","merge_method":"ff"}', 
         "help": "Project's global settings"}
     PROTECTED_BRANCHES = {"name": "--protected_branches",
-        "default": '[{"name":"master","push_access_levels":[{"access_level":0,"access_level_description":"No one"}],"merge_access_levels":[{"access_level":40,"access_level_description":"Maintainers"}],"allow_force_push":false,"code_owner_approval_required":false},{"name":"dev","push_access_levels":[{"access_level":0,"access_level_description":"No one"}],"merge_access_levels":[{"access_level":40,"access_level_description":"Maintainers"}],"allow_force_push":false,"code_owner_approval_required":false}]',
+        "default": '[{"name":"main","push_access_levels":[{"access_level":0,"access_level_description":"No one"}],"merge_access_levels":[{"access_level":40,"access_level_description":"Maintainers"}],"allow_force_push":false,"code_owner_approval_required":false},\
+            {"name":"dev","push_access_levels":[{"access_level":0,"access_level_description":"No one"}],"merge_access_levels":[{"access_level":40,"access_level_description":"Maintainers"}],"allow_force_push":false,"code_owner_approval_required":false},\
+            {"name":"master","push_access_levels":[{"access_level":0,"access_level_description":"No one"}],"merge_access_levels":[{"access_level":40,"access_level_description":"Maintainers"}],"allow_force_push":false,"code_owner_approval_required":false}]',
         "help": "Project's protected branches"}
     APPROVAL_RULES = {"name": "--approval_rules",
         "default": '{"name": "Any name", "rule_type": "any_approver", "approvals_required": 1}',
         "help": "Project's default approval rules"}
     APPROVAL_SETTINGS = {"name": "--approval_settings",
-        "default": '{"reset_approvals_on_push": true, "disable_overriding_approvers_per_merge_request": true, "merge_requests_author_approval": false, "merge_requests_disable_committers_approval": true}',
+        "default": '{"reset_approvals_on_push": false, "selective_code_owner_removals": false, "disable_overriding_approvers_per_merge_request": true, "merge_requests_author_approval": false, "merge_requests_disable_committers_approval": false}',
         "help": "Project's approval settings"}
     PROJECT_IDS = {"name": "--project_ids", "default": '', "help": "List of Project Ids (comma separated) e.g `1,2,3`"}
     NAMESPACE_PATHS = {"name": "--namespace_paths", "default": '', "help": "List of Groups (comma separated) e.g `npd-gov,npd`"}
