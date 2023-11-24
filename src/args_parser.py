@@ -14,6 +14,7 @@ class ArgsParser:
         # positional arguments
         arg_parser.add_argument(Positionals.BASE_URL["name"], help=Positionals.BASE_URL["help"])
         arg_parser.add_argument(Positionals.TOKEN["name"], help=Positionals.TOKEN["help"])
+        arg_parser.add_argument(Positionals.DEBUG["name"], help=Positionals.DEBUG["help"])
 
         # optional arguments 
         arg_parser.add_argument(Optionals.NAMESPACE_PATHS["name"], default=Optionals.NAMESPACE_PATHS["default"], type=str, help=Optionals.NAMESPACE_PATHS["help"])
@@ -28,6 +29,7 @@ class ArgsParser:
         args = {}
         args["base_url"] = parsed_args.base_url+"/api/v4"
         args["headers"] = {"PRIVATE-TOKEN": parsed_args.token }
+        args["debug"] = parsed_args.debug
         args["namespace_paths"] = list(filter(None, parsed_args.namespace_paths.split(",")))
         args["project_ids"] = list(filter(None, parsed_args.project_ids.split(",")))
         args["approval_settings"] = json.loads(parsed_args.approval_settings)
@@ -47,4 +49,3 @@ class ArgsParser:
             \nCurrently 4 GibLab project configuration sections supported: \
             \nApproval settings`, `Approval rules`, `Protected branches`, `General project settings`. \
             \n\nWritten by Kanat Aidarov (https://github.com/kanataidarov)"
-

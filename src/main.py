@@ -8,8 +8,14 @@ def main():
 
     selected_pids = gconf.select_project_ids()
 
-    gconf.update_settings(selected_pids)
-    
+    if args["debug"]:
+        debug_mode(gconf)
+    else: 
+        gconf.update_settings(selected_pids)
+        gconf.print_response()
+
+
+def debug_mode(gconf): 
     # gconf.select_projects_without_description()
     # selected_group_ids = gconf.select_group_ids()
 
@@ -25,4 +31,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

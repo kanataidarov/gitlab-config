@@ -30,5 +30,6 @@ class Optionals:
     NAMESPACE_PATHS = {"name": "--namespace_paths", "default": '', "help": "List of Groups (comma separated) e.g `npd-gov,npd`"}
 
 class Positionals:
-    BASE_URL = {"name": "base_url", "help": "URL of GitLab  e.g `https://github.kz`"}
+    BASE_URL = {"name": "base_url", "help": "URL of GitLab,  e.g `https://github.kz`"}
     TOKEN = {"name": "token", "help": "Personal Access Token, required to access GitLab API"}
+    DEBUG = {"name": "debug", "help": "Boolean value enabling other non-default functionality of given Project"}
