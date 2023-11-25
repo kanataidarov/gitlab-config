@@ -138,6 +138,13 @@ class ProjectSettings:
             allowed_to_merge_removals = allowed_to_merge_removals[:-1] + ']'
             data += '"allowed_to_merge": ' + allowed_to_merge_removals + ','
 
+        if candidate_branch["unprotect_access_levels"]:
+            allowed_to_merge_removals = '['
+            for level in candidate_branch["unprotect_access_levels"]:
+                allowed_to_merge_removals += '{{"id": {level_id}, "_destroy": true}},'.format(level_id=level["id"])
+            allowed_to_merge_removals = allowed_to_merge_removals[:-1] + ']'
+            data += '"allowed_to_unprotect": ' + allowed_to_merge_removals + ','
+
         data = data[:-1] + '}'
                                     
         response = requests.patch(protected_branch_url, headers=self.args["headers"], data=data)
