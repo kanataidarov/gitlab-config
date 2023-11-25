@@ -26,7 +26,7 @@ def debug_mode(gconf, selected_pids):
 
     # gconf.delete_branches_by_regex(selected_pids, branch_names, "^(?!tz|main).*")
 
-    gconf.ps.update_protected_branches(selected_pids)
+    # gconf.ps.update_protected_branches(selected_pids)
 
     gconf.print_response()
 
