@@ -27,7 +27,7 @@ class CsvExporter:
         file = open(out_path, mode="w")
         writer = csv.writer(file, delimiter=";")
         for group_id in selected_group_ids: 
-            members = self.printer.response_json(args, f"groups/{group_id}/pending_members")
+            members = self.printer.response_json(args, f'groups/{group_id}/pending_members')
             
             print(len(members))
             for member in members: 

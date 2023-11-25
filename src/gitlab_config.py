@@ -66,7 +66,7 @@ class GitlabConfig:
         :return List of GitLab Branch names for given Project Id. 
         """
         for project_id in selected_pids: 
-            branch_names_url = f"projects/{project_id}/repository/branches"
+            branch_names_url = f'projects/{project_id}/repository/branches'
             response_json = self.printer.response_json(self.args, branch_names_url)
 
             result = []
@@ -99,11 +99,11 @@ class GitlabConfig:
         """
         for project_id in selected_pids: 
             for branch_name in branch_names: 
-                create_branch_url = f"{self.args['base_url']}/projects/{project_id}/repository/branches"
+                create_branch_url = f'{self.args["base_url"]}/projects/{project_id}/repository/branches'
                 match = re.compile(regex).search(branch_name)
                 if match:
                     new_branch_name = re.sub(regex, replacement_str, branch_name)
-                    create_branch_url += f"?branch={new_branch_name}&ref={branch_name}"
+                    create_branch_url += f'?branch={new_branch_name}&ref={branch_name}'
                     response = requests.post(create_branch_url, headers=self.args["headers"])
                     self.printer.dump_response(response, project_id, "Duplicated branches", desired_states={201})
 
@@ -116,7 +116,7 @@ class GitlabConfig:
         :return Array of commit objects, containing id, message, creation datetime 
         """
         for project_id in selected_pids:
-            select_commits_url = f"{self.args['base_url']}/projects/{project_id}/repository/commits?ref_name={branch_name}"
+            select_commits_url = f'{self.args["base_url"]}/projects/{project_id}/repository/commits?ref_name={branch_name}'
             response = requests.get(select_commits_url, headers=self.args["headers"])
             return [{"id": entry["id"], "message": entry["message"], "created_at": entry["created_at"]} for entry in response.json()]
 
@@ -152,7 +152,7 @@ class GitlabConfig:
             for branch_name in branch_names: 
                 match = re.compile(regex).search(branch_name)
                 if match:
-                    delete_branch_url = f"{self.args['base_url']}/projects/{project_id}/repository/branches/{quote_plus(branch_name)}"
+                    delete_branch_url = f'{self.args["base_url"]}/projects/{project_id}/repository/branches/{quote_plus(branch_name)}'
                     response = requests.delete(delete_branch_url, headers=self.args["headers"])
                     print(response)
 

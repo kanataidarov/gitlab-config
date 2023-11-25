@@ -23,10 +23,10 @@ class Printer:
         :path Subdirectory (section) with which to complete url. 
         :return response as json from specified url. 
         """
-        final_url = f"{args['base_url']}/{path}?per_page=999&page=1"
+        final_url = f'{args["base_url"]}/{path}?per_page=999&page=1'
         response = requests.get(final_url, headers=args["headers"])
         if not response.ok: 
-            raise Exception(f"Undesired ({response.status_code}) response from `{final_url}`")
+            raise Exception(f'Undesired ({response.status_code}) response from `{final_url}`')
         return response.json()
 
 
@@ -40,7 +40,7 @@ class Printer:
         if response.status_code in desired_states: 
             text = response.text 
             if config_name in self.updated[project_id].keys(): 
-                text += f"\n{self.updated[project_id][config_name]}"
+                text += f'\n{self.updated[project_id][config_name]}'
             self.updated[project_id][config_name] = text
         else: 
             global_utils.fail(project_id, response)
@@ -49,7 +49,7 @@ class Printer:
     def print_response(self): 
         """Prints all responses from `updated` attribute."""
         for project_id in self.updated.keys(): 
-            print(f"{clr.HDRC}Project {project_id} successfully updated.{clr.DMPC} \nNew configuration parameters are: {clr.RSTC}")
+            print(f'{clr.HDRC}Project {project_id} successfully updated.{clr.DMPC} \nNew configuration parameters are: {clr.RSTC}')
             for config_name in self.updated[project_id].keys(): 
-                print(f"{clr.SUBC}{config_name}: \n{clr.DMPC}{self.updated[project_id][config_name]}{clr.RSTC}")
+                print(f'{clr.SUBC}{config_name}: \n{clr.DMPC}{self.updated[project_id][config_name]}{clr.RSTC}')
 
