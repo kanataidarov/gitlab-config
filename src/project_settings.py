@@ -31,7 +31,7 @@ class ProjectSettings:
             """
 
             project_settings_url = f'{self.args["base_url"]}/projects/{project_id}'
-            response = requests.put(project_settings_url, headers=self.args["headers"], data=self.args["project_settings"])
+            response = requests.put(project_settings_url, headers=self.args["headers"], data=json.dumps(self.args["project_settings"]))
 
             self.printer.dump_response(response, project_id, 'Project settings', {200})
 
@@ -44,9 +44,7 @@ class ProjectSettings:
 
         for project_id in selected_pids: 
             approvals_url = f'{self.args["base_url"]}/projects/{project_id}/approvals'
-
-            response = requests.post(approvals_url, headers=self.args["headers"], data=self.args["approval_settings"])
-            
+            response = requests.post(approvals_url, headers=self.args["headers"], data=json.dumps(self.args["approval_settings"]))
             self.printer.dump_response(response, project_id, 'Approval settings', {201})
 
 
@@ -64,9 +62,9 @@ class ProjectSettings:
             if len(default_rule) == 1: 
                 self.args["approval_rules"]["id"] = default_rule[0]["id"]
                 response = requests.put(f'{approval_rules_url}/{self.args["approval_rules"]["id"]}', \
-                                        headers=self.args["headers"], data=self.args["approval_rules"])
+                                        headers=self.args["headers"], data=json.dumps(self.args["approval_rules"]))
             elif len(default_rule) == 0: 
-                response = requests.post(approval_rules_url, headers=self.args["headers"], data=self.args["approval_rules"])
+                response = requests.post(approval_rules_url, headers=self.args["headers"], data=json.dumps(self.args["approval_rules"]))
             else: 
                 raise Exception(f'Project {project_id} cannot contain more than 1 default approval rule')
             
