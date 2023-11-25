@@ -1,3 +1,4 @@
+import global_utils
 import requests
 
 class ProjectSettings:
@@ -80,7 +81,7 @@ class ProjectSettings:
                 if len( [branch for branch in branches if branch["name"] == candidate["name"]] ) == 1 \
                         and len( [branch for branch in protected_branches if branch["name"] == candidate["name"]] ) == 1:
                     
-                    self.__clear_all_access_levels(project_id, protected_branches, candidate["name"])
+                    self.__clear_all_access_levels(project_id, candidate["name"], protected_branches)
 
     def __clear_all_access_levels(self, project_id, branch_name, protected_branches):
         """Removes all access_level records for a given protected branch.
@@ -111,8 +112,12 @@ class ProjectSettings:
         data += '}'
                             
         response = requests.patch(protected_branch_url, headers=self.args["headers"], data=data)
-        self.printer.dump_response(response, project_id, "Protected branches", {200})
-
+        
+        if response.status_code != 200: 
+            global_utils.fail(project_id, response)
+       
+        return response
+    
 
     def update_project_settings(self, selected_pids):
         """Updates overall Project Settings for specified GitLab Ids. 

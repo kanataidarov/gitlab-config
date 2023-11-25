@@ -1,6 +1,7 @@
 from collections import defaultdict
 from const import clr
 
+import global_utils
 import requests
 
 
@@ -42,7 +43,7 @@ class Printer:
                 text += f"\n{self.updated[project_id][config_name]}"
             self.updated[project_id][config_name] = text
         else: 
-            raise Exception(f"Project {project_id} failed to update. Reason: \n{response.status_code} - {response.text}")
+            global_utils.fail(project_id, response)
 
 
     def print_response(self): 
