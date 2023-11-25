@@ -17,6 +17,7 @@ def main():
 
 def debug_mode(gconf, selected_pids): 
     gconf.select_projects_without_description()
+    
     gconf.print_response()
 
 
