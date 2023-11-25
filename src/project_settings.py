@@ -63,9 +63,10 @@ class ProjectSettings:
 
             response = requests.get(protected_branches_url, headers=self.args["headers"])
             protected_branches = response.json()
+            # print(protected_branches)
 
             for candidate in self.args["protected_branches"]:
-                # if branch exists and its not protected them make candidate protected
+                # if candidate branch exists and its not protected add it to protected branches
                 if len( [branch for branch in branches if branch["name"] == candidate["name"]] ) == 1 \
                         and len( [branch for branch in protected_branches if branch["name"] == candidate["name"]] ) == 0:
                     protected_branch_url = f'{protected_branches_url}?name={candidate["name"]}\
@@ -75,6 +76,42 @@ class ProjectSettings:
                         &code_owner_approval_required={candidate["code_owner_approval_required"]}'
                     response = requests.post(protected_branch_url, headers=self.args["headers"], data=candidate)
                     self.printer.dump_response(response, project_id, "Protected branches", {201})
+                # if candidate branch exists and it is protected update its settings
+                if len( [branch for branch in branches if branch["name"] == candidate["name"]] ) == 1 \
+                        and len( [branch for branch in protected_branches if branch["name"] == candidate["name"]] ) == 1:
+                    
+                    self.__clear_all_access_levels(project_id, protected_branches, candidate["name"])
+
+    def __clear_all_access_levels(self, project_id, branch_name, protected_branches):
+        """Removes all access_level records for a given protected branch.
+        :project_id         Id of the project whose branch to update for.
+        :protected_branches List of protected branch objects. 
+        :branch_name        Name of the branch to remove all access levels.
+        """
+        protected_branch_url = f"{self.args['base_url']}/projects/{project_id}/protected_branches/{branch_name}"
+        candidate_branch = [branch for branch in protected_branches if branch["name"] == branch_name][0]
+
+        data = '{'
+
+        if candidate_branch["push_access_levels"]:
+            allowed_to_push_removals = "["
+            for level in candidate_branch["push_access_levels"]:
+                allowed_to_push_removals += '{{"id": {level_id}, "_destroy": true}},'.format(level_id=level["id"])
+            allowed_to_push_removals = allowed_to_push_removals[:-1] + "]"
+            data += '"allowed_to_push": ' + allowed_to_push_removals
+
+        if candidate_branch["merge_access_levels"]:
+            data += ', '
+            allowed_to_merge_removals = "["
+            for level in candidate_branch["merge_access_levels"]:
+                allowed_to_merge_removals += '{{"id": {level_id}, "_destroy": true}},'.format(level_id=level["id"])
+            allowed_to_merge_removals = allowed_to_merge_removals[:-1] + "]"
+            data += '"allowed_to_merge": ' + allowed_to_merge_removals
+
+        data += '}'
+                            
+        response = requests.patch(protected_branch_url, headers=self.args["headers"], data=data)
+        self.printer.dump_response(response, project_id, "Protected branches", {200})
 
 
     def update_project_settings(self, selected_pids):

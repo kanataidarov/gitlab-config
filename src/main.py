@@ -9,13 +9,13 @@ def main():
     selected_pids = gconf.select_project_ids()
 
     if args["debug"]:
-        debug_mode(gconf)
+        debug_mode(gconf, selected_pids)
     else: 
         gconf.update_settings(selected_pids)
         gconf.print_response()
 
 
-def debug_mode(gconf): 
+def debug_mode(gconf, selected_pids): 
     # gconf.select_projects_without_description()
     # selected_group_ids = gconf.select_group_ids()
 
@@ -25,6 +25,8 @@ def debug_mode(gconf):
     # gconf.duplicate_branches_with_new_names(selected_pids, branch_names, r"^.*?feature", "tz")
 
     # gconf.delete_branches_by_regex(selected_pids, branch_names, "^(?!tz|main).*")
+
+    gconf.ps.update_protected_branches(selected_pids)
 
     gconf.print_response()
 

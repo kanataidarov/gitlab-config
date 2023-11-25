@@ -48,7 +48,7 @@ class Printer:
     def print_response(self): 
         """Prints all responses from `updated` attribute."""
         for project_id in self.updated.keys(): 
-            print(f"{clr.HDRC}Project {project_id} successfully updated.{clr.DMPC} New configuration parameters are: {clr.RSTC}")
+            print(f"{clr.HDRC}Project {project_id} successfully updated.{clr.DMPC} \nNew configuration parameters are: {clr.RSTC}")
             for config_name in self.updated[project_id].keys(): 
                 print(f"{clr.SUBC}{config_name}: \n{clr.DMPC}{self.updated[project_id][config_name]}{clr.RSTC}")
 

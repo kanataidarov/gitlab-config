@@ -28,7 +28,7 @@ class ArgsParser:
         
         args = {}
         args["base_url"] = parsed_args.base_url+"/api/v4"
-        args["headers"] = {"PRIVATE-TOKEN": parsed_args.token }
+        args["headers"] = {"PRIVATE-TOKEN": parsed_args.token, "Content-Type": "application/json"}
         args["debug"] = ArgsParser.to_bool(parsed_args.debug)
         args["namespace_paths"] = list(filter(None, parsed_args.namespace_paths.split(",")))
         args["project_ids"] = list(filter(None, parsed_args.project_ids.split(",")))
