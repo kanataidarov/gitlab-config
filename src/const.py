@@ -35,3 +35,7 @@ class Positionals:
     BASE_URL = {"name": "base_url", "help": "URL of GitLab,  e.g `https://github.kz`"}
     TOKEN = {"name": "token", "help": "Personal Access Token, required to access GitLab API"}
     DEBUG = {"name": "debug", "help": "Boolean value enabling other non-default functionality of given Project"}
+
+ACT_AFTER_TIMEDELTA = 999
+PER_PAGE_COUNT = 999
+STALE_BRANCH_DELTA = 90

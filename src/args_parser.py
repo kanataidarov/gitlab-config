@@ -4,6 +4,7 @@ from custom_argparse import CustomArgparseFormatter
 
 import json
 
+
 class ArgsParser:
     """Parses Command Line arguments and replaces optional ones with default settings.
     """
@@ -50,6 +51,7 @@ class ArgsParser:
             \nApproval settings`, `Approval rules`, `Protected branches`, `General project settings`. \
             \n\nWritten by Kanat Aidarov (https://github.com/kanataidarov)"
 
+
     def to_bool(value):
         """Convert string value to boolean. 
         """
@@ -66,4 +68,4 @@ class ArgsParser:
             return valid[lower_value]
         else:
             raise ValueError('invalid literal for boolean: "%s"' % value)
-    
+

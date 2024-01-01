@@ -3,6 +3,7 @@ from printer_utils import Printer
 from project_settings import ProjectSettings
 from urllib.parse import quote_plus
 
+import const
 import re
 import requests
 
@@ -26,7 +27,6 @@ class GitlabConfig:
 
     def select_project_ids(self): 
         """Selects GitLab Ids of projects belonging to GitLab Groups specified in `namespace_paths` CL-argument.  
-        :args Command Line arguments, includes defaults of optional arguments. 
         :return List of GitLab Ids of projects belonging to specified GitLab Groups. 
         """
         result = []
@@ -42,7 +42,6 @@ class GitlabConfig:
 
     def select_group_ids(self): 
         """Selects GitLab Ids of groups specified in `namespace_paths` CL-argument.  
-        :args Command Line arguments, includes defaults of optional arguments. 
         :return List of GitLab Ids of groups by their names. 
         """
         groups = self.printer.response_json(self.args, "groups")
@@ -61,10 +60,12 @@ class GitlabConfig:
 
 
     def select_branch_names(self, selected_pids, active=True): 
-        """Selects Branch names for given {:selected_pids}. 
-        :args Command Line arguments, includes defaults of optional arguments. 
-        :return List of GitLab Branch names for given Project Id. 
+        """Selects Branch names for given {:selected_pids}.
+        :selected_pids List of Project Ids to operate on.
+        :active If set selects only non-stale branches. Set by default.
+        :return List of GitLab Branch names for given Project Id.
         """
+        response = {}
         for project_id in selected_pids: 
             branch_names_url = f'projects/{project_id}/repository/branches'
             response_json = self.printer.response_json(self.args, branch_names_url)
@@ -74,25 +75,27 @@ class GitlabConfig:
                 result = [entry["name"] for entry in response_json if not self.__is_stale_branch(entry)]
             else: 
                 result = [entry["name"] for entry in response_json if self.__is_stale_branch(entry)]
+            
+            response[project_id] = result
+        
+        return response 
 
-            return result
 
-
-    def __is_stale_branch(self, branch_entry, previous_days=90): 
+    def __is_stale_branch(self, branch_entry, previous_days=const.STALE_BRANCH_DELTA, exclude_branches="dev,main"): 
         """Checks if branch that has not had any commits in the previous {:previous_days} days.
         :branch_entry Object containing array of commit objects.
         :previous_days Number of days that branch should not have any new commits. 90 days by default.
+        :exclude_branches Branch names to exclude from checking. Dev and main branches not checked by default.
         :return Boolean determining whether branch's last commit not older than specified number of days. 
         """
         last_commit_dt = datetime.fromisoformat(branch_entry["commit"]["created_at"])
         previous_days_ago_dt = datetime.now(timezone(timedelta(hours=6)))-timedelta(days=previous_days)
-        return previous_days_ago_dt > last_commit_dt
+        return previous_days_ago_dt > last_commit_dt and branch_entry["name"] not in exclude_branches.split(",")
     
 
     def duplicate_branches_with_new_names(self, selected_pids, branch_names, regex, replacement_str):
         """Creates new branches from {:selected_pids} and {:branch_names} using {:regex} and {:replacement_str}.
-        :args Command Line arguments, includes defaults of optional arguments. 
-        :selected_group_ids List of Ids for selected Gitlab Groups.
+        :selected_pids List of Project Ids to operate on.
         :branch_names Names of the branches to duplicate. 
         :regex Regular expression which finds part of branch name to replace when duplicating.
         :replacement_str New part of a branch name. 
@@ -110,8 +113,7 @@ class GitlabConfig:
 
     def select_commits_by_branch(self, selected_pids, branch_name): 
         """Selects all commits within given {:selected_pids} and {:branch_name}
-        :args Command Line arguments, includes defaults of optional arguments. 
-        :selected_group_ids List of Ids for selected Gitlab Groups.
+        :selected_pids List of Project Ids to operate on.
         :branch_name Name of a branch with commits.
         :return Array of commit objects, containing id, message, creation datetime 
         """
@@ -122,9 +124,10 @@ class GitlabConfig:
 
 
     def select_branch_names_with_commits(self, selected_pids, active=False): 
-        """Selects Branch names for given {:selected_pids} including their commit objects. 
-        :args Command Line arguments, includes defaults of optional arguments. 
-        :return List of GitLab Branch names for given Project Id and all commit objects within them. 
+        """Selects Branch names for given {:selected_pids} including their commit objects.
+        :selected_pids List of Project Ids to operate on.
+        :active If set selects only non-stale branches. Unset by default.
+        :return List of GitLab Branch names for given Project Id and all commit objects within them.
         """
         branch_names = self.select_branch_names(selected_pids, active)
         branches_n_their_commits = {}
@@ -143,8 +146,7 @@ class GitlabConfig:
 
     def delete_branches_by_regex(self, selected_pids, branch_names, regex):
         """Delete all branches with {:branch_names} within {:selected_pids} using {:regex}.
-        :args Command Line arguments, includes defaults of optional arguments. 
-        :selected_group_ids List of Ids for selected Gitlab Groups.
+        :selected_pids List of Project Ids to operate on.
         :branch_names Names of the branches within {:selected_pids}. 
         :regex Regular expression which matches branch name to determine whether to delete given branch.
         """
@@ -159,4 +161,15 @@ class GitlabConfig:
 
     def print_response(self): 
         self.printer.print_response()
+
+
+    def select_project_by_id(self, project_id): 
+        """Selects project's details by its {:project_id}.
+        :project_id Id of the project to select.
+        :return Project's details.
+        """
+        select_project_url = f'{self.args["base_url"]}/projects/{project_id}'
+        response = requests.get(select_project_url, headers=self.args["headers"])
+
+        return response.json()
 

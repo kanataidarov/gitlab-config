@@ -1,5 +1,6 @@
 from collections import defaultdict
-from const import clr
+from const import clr, ACT_AFTER_TIMEDELTA, PER_PAGE_COUNT
+from datetime import datetime, timedelta
 
 import global_utils
 import requests
@@ -23,7 +24,7 @@ class Printer:
         :path Subdirectory (section) with which to complete url. 
         :return response as json from specified url. 
         """
-        final_url = f'{args["base_url"]}/{path}?per_page=999&page=1'
+        final_url = f'{args["base_url"]}/{path}?&per_page={PER_PAGE_COUNT}&page=1'
         response = requests.get(final_url, headers=args["headers"])
         if not response.ok: 
             raise Exception(f'Undesired ({response.status_code}) response from `{final_url}`')
@@ -33,7 +34,7 @@ class Printer:
     def dump_response(self, response, project_id, config_name, desired_states={200, 201, 204}): 
         """Gathers successful response into `updated` attribute, otherwise throws errorneus response from GitLab. 
         :response Response obtained from last GitLab API call. 
-        :project_id GitLab Id of the project currently being configured. 
+        :project_id GitLab Id of the project being configured. 
         :config_name Name of the section being configured for the project. 
         :desired_states List of response status codes for which to accept dumps, otherwise errorneus response. 
         """

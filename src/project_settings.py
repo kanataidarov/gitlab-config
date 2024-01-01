@@ -2,6 +2,7 @@ import global_utils
 import json
 import requests
 
+
 class ProjectSettings:
     """Accesses GitLab API to manipulate project settings. 
 
