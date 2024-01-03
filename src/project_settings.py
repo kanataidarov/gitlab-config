@@ -178,3 +178,32 @@ class ProjectSettings:
         response = requests.patch(protected_branch_url, headers=self.args["headers"], data=data)
         self.printer.dump_response(response, project_id, "Protected branches", {200})
 
+
+    def select_project_by_setting(self, selected_pids, settings_filter):
+        """Selects Project Id satisfying {:settings_filter} from list of {:selected_pids}
+        :selected_pids      List of GitLab Ids of projects belonging to specified GitLab Groups.
+        :settings_filter    Map of settings to filter from.
+        :return             List of projects whose settings match for {:settings_filter}.
+        """
+        appropriate_projects = []
+        for project_id in selected_pids: 
+            select_project_url = f'{self.args["base_url"]}/projects/{project_id}'
+            project = requests.get(select_project_url, headers=self.args["headers"]).json()
+
+            if self.__is_appropriate_project(project, settings_filter):
+                appropriate_projects.append((project["id"], project["path"]))
+
+        return appropriate_projects
+    
+    def __is_appropriate_project(self, project, settings_filter):
+        """Checks if projects settings correlate with {:settings_filter} values.
+        :project            Json-object for the project whose settings to check.
+        :settings_filter    Map of settings to filter from. Example: `{'merge_method': 'ff', 'squash_option': 'default_off'}`.
+        :return             Boolean denoting, whether projects settings match with {:settings_filter} values or not.
+        """
+        for key, val in settings_filter.items():
+            if not project[key] == val: 
+                return False
+            
+        return True
+

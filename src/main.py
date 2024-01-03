@@ -16,7 +16,7 @@ def main():
 
 
 def debug_mode(gconf, selected_pids): 
-    print(gconf.select_branch_names(selected_pids, active=False))
+    print(gconf.ps.select_project_by_setting(selected_pids, {"merge_method": "ff"}))
 
 
 if __name__ == "__main__":
