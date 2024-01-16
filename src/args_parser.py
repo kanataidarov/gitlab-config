@@ -24,6 +24,7 @@ class ArgsParser:
         arg_parser.add_argument(Optionals.APPROVAL_RULES["name"], default=Optionals.APPROVAL_RULES["default"], type=str, help=Optionals.APPROVAL_RULES["help"])
         arg_parser.add_argument(Optionals.PROTECTED_BRANCHES["name"], default=Optionals.PROTECTED_BRANCHES["default"], type=str, help=Optionals.PROTECTED_BRANCHES["help"])
         arg_parser.add_argument(Optionals.PROJECT_SETTINGS["name"], default=Optionals.PROJECT_SETTINGS["default"], type=str, help=Optionals.PROJECT_SETTINGS["help"])
+        arg_parser.add_argument(Optionals.PUSH_RULES["name"], default=Optionals.PUSH_RULES["default"], type=str, help=Optionals.PUSH_RULES["help"])
 
         parsed_args = arg_parser.parse_args()
         
@@ -37,6 +38,7 @@ class ArgsParser:
         args["approval_rules"] = json.loads(parsed_args.approval_rules)
         args["protected_branches"] = json.loads(parsed_args.protected_branches)
         args["project_settings"] = json.loads(parsed_args.project_settings)
+        args["push_rules"] = json.loads(parsed_args.push_rules)
 
         if all(len(entries)>0 for entries in (args["namespace_paths"], args["project_ids"])):
             arg_parser.error("Arguments `namespace_paths` and `project_ids` are mutually exclusive.")

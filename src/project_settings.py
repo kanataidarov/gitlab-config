@@ -18,7 +18,6 @@ class ProjectSettings:
     
     def update_project_settings(self, selected_pids):
         """Updates overall Project Settings for specified GitLab Ids. 
-        :args Command Line arguments, includes defaults of optional arguments. 
         :selected_pids List of GitLab Ids of projects belonging to specified GitLab Groups. 
         """
 
@@ -39,7 +38,6 @@ class ProjectSettings:
 
     def update_approval_settings(self, selected_pids): 
         """Updates Approval Settings subsection (in General section) for specified GitLab Ids. 
-        :args Command Line arguments, includes defaults of optional arguments. 
         :selected_pids List of GitLab Ids of projects belonging to specified GitLab Groups. 
         """
 
@@ -51,7 +49,6 @@ class ProjectSettings:
 
     def update_approval_rules(self, selected_pids): 
         """Updates Approval Rules subsection (in General section) for specified GitLab Ids. 
-        :args Command Line arguments, includes defaults of optional arguments. 
         :selected_pids List of GitLab Ids of projects belonging to specified GitLab Groups. 
         """
 
@@ -74,7 +71,6 @@ class ProjectSettings:
 
     def update_protected_branches(self, selected_pids):
         """Updates Protected Branches subsection (in General section) for specified GitLab Ids. 
-        :args Command Line arguments, includes defaults of optional arguments. 
         :selected_pids List of GitLab Ids of projects belonging to specified GitLab Groups. 
         """
 
@@ -206,4 +202,14 @@ class ProjectSettings:
                 return False
             
         return True
+
+    def update_push_rules(self, selected_pids):
+        """Updates Push rules (in Repository Settings) for specified GitLab Ids. 
+        :selected_pids List of GitLab Ids of projects belonging to specified GitLab Groups. 
+        """
+
+        for project_id in selected_pids: 
+            approvals_url = f'{self.args["base_url"]}/projects/{project_id}/push_rule'
+            response = requests.put(approvals_url, headers=self.args["headers"], data=json.dumps(self.args["push_rules"]))
+            self.printer.dump_response(response, project_id, 'Push rules', {200})
 

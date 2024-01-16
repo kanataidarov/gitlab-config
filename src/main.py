@@ -16,7 +16,8 @@ def main():
 
 
 def debug_mode(gconf, selected_pids): 
-    print(gconf.ps.select_project_by_setting(selected_pids, {"merge_method": "rebase_merge"}))
+    gconf.ps.update_push_rules(selected_pids)
+    gconf.print_response()
 
 
 if __name__ == "__main__":

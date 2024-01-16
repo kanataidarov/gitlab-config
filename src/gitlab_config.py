@@ -142,6 +142,7 @@ class GitlabConfig:
         self.ps.update_approval_rules(selected_pids)
         self.ps.update_project_settings(selected_pids)
         self.ps.update_protected_branches(selected_pids)
+        self.ps.update_push_rules(selected_pids)
     
 
     def delete_branches_by_regex(self, selected_pids, branch_names, regex):
