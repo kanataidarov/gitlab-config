@@ -1,3 +1,4 @@
+
 class clr: 
     HDRC = '\033[1;32m'
     SUBC = '\033[35m'
@@ -28,10 +29,8 @@ class Optionals:
     APPROVAL_SETTINGS = {"name": "--approval_settings",
         "default": '{"reset_approvals_on_push": false, "selective_code_owner_removals": false, "disable_overriding_approvers_per_merge_request": true, "merge_requests_author_approval": false, "merge_requests_disable_committers_approval": false}',
         "help": "Project's approval settings"}
-    PUSH_RULES = {"name": "--push-rules", 
-        "default": '{"commit_message_regex": "((feature|hotfix|bugfix|refactor)(\\/)([A-Za-z]{3,5}-[0-9]{3,5})((_)(.*))*)|(dev|prod)",\
-            "branch_name_regex": "((feature|hotfix|bugfix|refactor)(\\/)([A-Za-z]{3,5}-[0-9]{3,5})((_)(.*))*)|(dev|prod)"}',
-            "help": ""}
+    PUSH_RULES = {"name": "--push-rule-regex", "default": "((feature|hotfix|bugfix|refactor)(\\\/)([A-Za-z]{3,5}-[0-9]{3,5})((_)(.*))*)|(dev|prod)", 
+                  "help": "Regex to enforce branch name and commit message"}
     PROJECT_IDS = {"name": "--project_ids", "default": '', "help": "List of Project Ids (comma separated) e.g `1,2,3`"}
     NAMESPACE_PATHS = {"name": "--namespace_paths", "default": '', "help": "List of Groups (comma separated) e.g `npd-gov,npd`"}
 

@@ -2,6 +2,8 @@ import global_utils
 import json
 import requests
 
+from string import Template
+
 
 class ProjectSettings:
     """Accesses GitLab API to manipulate project settings. 
@@ -207,9 +209,11 @@ class ProjectSettings:
         """Updates Push rules (in Repository Settings) for specified GitLab Ids. 
         :selected_pids List of GitLab Ids of projects belonging to specified GitLab Groups. 
         """
+        template = Template("""{"commit_message_regex": "$regex", "branch_name_regex": "$regex"}""")
+        push_rules = template.substitute(regex=self.args["push_rule_regex"])
 
         for project_id in selected_pids: 
             approvals_url = f'{self.args["base_url"]}/projects/{project_id}/push_rule'
-            response = requests.put(approvals_url, headers=self.args["headers"], data=json.dumps(self.args["push_rules"]))
+            response = requests.put(approvals_url, headers=self.args["headers"], data=push_rules)
             self.printer.dump_response(response, project_id, 'Push rules', {200})
 

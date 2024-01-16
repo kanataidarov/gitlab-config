@@ -38,7 +38,7 @@ class ArgsParser:
         args["approval_rules"] = json.loads(parsed_args.approval_rules)
         args["protected_branches"] = json.loads(parsed_args.protected_branches)
         args["project_settings"] = json.loads(parsed_args.project_settings)
-        args["push_rules"] = json.loads(parsed_args.push_rules)
+        args["push_rule_regex"] = parsed_args.push_rule_regex
 
         if all(len(entries)>0 for entries in (args["namespace_paths"], args["project_ids"])):
             arg_parser.error("Arguments `namespace_paths` and `project_ids` are mutually exclusive.")
