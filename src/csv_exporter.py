@@ -17,7 +17,6 @@ class CsvExporter:
         self.printer = Printer()
         self.roles = defaultdict(str)
 
-
     def csv_group_members(self, args, selected_group_ids, out_path="Members.csv"): 
         """Exports members of specified groups into csv. 
         :args Command Line arguments, includes defaults of optional arguments. 
@@ -31,7 +30,7 @@ class CsvExporter:
             
             print(len(members))
             for member in members: 
-                writer.writerow([ member["username"], Roles.TABLE[int(member["access_level"])] ])
+                writer.writerow([member["username"], Roles.TABLE[int(member["access_level"])]])
 
         file.close()
 

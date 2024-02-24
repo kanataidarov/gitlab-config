@@ -33,7 +33,7 @@ class Optionals:
                   "help": "Regex to enforce branch name and commit message"}
     PROJECT_IDS = {"name": "--project_ids", "default": '', "help": "List of Project Ids (comma separated) e.g `1,2,3`"}
     NAMESPACE_PATHS = {"name": "--namespace_paths", "default": '', "help": "List of Groups (comma separated) e.g `npd-gov,npd`"}
-    PROJECT_SLUGS = {"name": "--project_slugs", "default": '', "help": "List of Project slugs (comma seprated) e.g. `mp-borealis,sso-auth`"}
+    PROJECT_SLUGS = {"name": "--project_slugs", "default": '', "help": "List of Project slugs (comma separated) e.g. `mp-borealis,sso-auth`"}
 
 class Positionals:
     BASE_URL = {"name": "base_url", "help": "URL of GitLab,  e.g `https://github.kz`"}

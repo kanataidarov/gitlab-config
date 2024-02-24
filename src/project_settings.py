@@ -190,7 +190,8 @@ class ProjectSettings:
 
         return appropriate_projects
 
-    def __is_appropriate_project(self, project, settings_filter):
+    @staticmethod
+    def __is_appropriate_project(project, settings_filter):
         """Checks if projects settings correlate with {:settings_filter} values.
         :project            Json-object for the project whose settings to check.
         :settings_filter    Map of settings to filter from. Example: `{'merge_method': 'ff', 'squash_option': 'default_off'}`.

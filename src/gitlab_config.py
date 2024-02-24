@@ -64,7 +64,7 @@ class GitlabConfig:
         """Selects Branch names for given {:selected_pids}.
         :selected_pids List of Project Ids to operate on.
         :active If set selects only non-stale branches. Set by default.
-        :return List of GitLab Branch names for given Project Id.
+        :return List of GitLab Branch names for given Project id.
         """
         response = {}
         for project_id in selected_pids:
@@ -80,7 +80,8 @@ class GitlabConfig:
 
         return response
 
-    def __is_stale_branch(self, branch_entry, previous_days=const.STALE_BRANCH_DELTA, exclude_branches="dev,main"):
+    @staticmethod
+    def __is_stale_branch(branch_entry, previous_days=const.STALE_BRANCH_DELTA, exclude_branches="dev,main"):
         """Checks if branch that has not had any commits in the previous {:previous_days} days.
         :branch_entry Object containing array of commit objects.
         :previous_days Number of days that branch should not have any new commits. 90 days by default.
@@ -124,7 +125,7 @@ class GitlabConfig:
         """Selects Branch names for given {:selected_pids} including their commit objects.
         :selected_pids List of Project Ids to operate on.
         :active If set selects only non-stale branches. Unset by default.
-        :return List of GitLab Branch names for given Project Id and all commit objects within them.
+        :return List of GitLab Branch names for given Project id and all commit objects within them.
         """
         branch_names = self.select_branch_names(selected_pids, active)
         branches_n_their_commits = {}
@@ -159,7 +160,7 @@ class GitlabConfig:
 
     def select_project_by_id(self, project_id):
         """Selects project's details by its {:project_id}.
-        :project_id Id of the project to select.
+        :project_id id of the project to select.
         :return Project's details.
         """
         select_project_url = f'{self.args["base_url"]}/projects/{project_id}'

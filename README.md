@@ -12,7 +12,7 @@ Contents
 ### Motivation
 
 ---
-Specifying configuration settings for every GitLab project required a lot of mouse clicking in my case. All settings were similar for all of the projects.
+Specifying configuration settings for every GitLab project required a lot of mouse clicking in my case. All settings were similar for all the projects.
 
 I looked for a way to automate the configuration of GitLab projects conveniently. Therefore, came to the idea of using GitLab API for this task.
 
