@@ -1,9 +1,9 @@
-from args_parser import ArgsParser
+from args_parser import parse_args
 from gitlab_config import GitlabConfig
 
 
 def main(): 
-    args = ArgsParser.parse_args()
+    args = parse_args()
     gconf = GitlabConfig(args)
 
     selected_pids = gconf.select_project_ids()
