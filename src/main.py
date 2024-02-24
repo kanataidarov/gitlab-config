@@ -16,7 +16,7 @@ def main():
 
 
 def debug_mode(gconf, selected_pids): 
-    gconf.ps.update_push_rules(selected_pids)
+    gconf.ps.update_protected_branches(selected_pids)
     gconf.print_response()
 
 

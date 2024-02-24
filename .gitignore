@@ -130,4 +130,4 @@ dmypy.json
 
 # Custom ignores
 .DS_Store
-main.py
+/src/main.py

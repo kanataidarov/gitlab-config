@@ -20,6 +20,7 @@ class ArgsParser:
         # optional arguments 
         arg_parser.add_argument(Optionals.NAMESPACE_PATHS["name"], default=Optionals.NAMESPACE_PATHS["default"], type=str, help=Optionals.NAMESPACE_PATHS["help"])
         arg_parser.add_argument(Optionals.PROJECT_IDS["name"], default=Optionals.PROJECT_IDS["default"], type=str, help=Optionals.PROJECT_IDS["help"])
+        arg_parser.add_argument(Optionals.PROJECT_SLUGS["name"], default=Optionals.PROJECT_SLUGS["default"], type=str, help=Optionals.PROJECT_SLUGS["help"])
         arg_parser.add_argument(Optionals.APPROVAL_SETTINGS["name"], default=Optionals.APPROVAL_SETTINGS["default"], type=str, help=Optionals.APPROVAL_SETTINGS["help"])
         arg_parser.add_argument(Optionals.APPROVAL_RULES["name"], default=Optionals.APPROVAL_RULES["default"], type=str, help=Optionals.APPROVAL_RULES["help"])
         arg_parser.add_argument(Optionals.PROTECTED_BRANCHES["name"], default=Optionals.PROTECTED_BRANCHES["default"], type=str, help=Optionals.PROTECTED_BRANCHES["help"])
@@ -34,6 +35,7 @@ class ArgsParser:
         args["debug"] = ArgsParser.to_bool(parsed_args.debug)
         args["namespace_paths"] = list(filter(None, parsed_args.namespace_paths.split(",")))
         args["project_ids"] = list(filter(None, parsed_args.project_ids.split(",")))
+        args["project_slugs"] = list(filter(None, parsed_args.project_slugs.split(",")))
         args["approval_settings"] = json.loads(parsed_args.approval_settings)
         args["approval_rules"] = json.loads(parsed_args.approval_rules)
         args["protected_branches"] = json.loads(parsed_args.protected_branches)
@@ -41,7 +43,10 @@ class ArgsParser:
         args["push_rule_regex"] = parsed_args.push_rule_regex
 
         if all(len(entries)>0 for entries in (args["namespace_paths"], args["project_ids"])):
-            arg_parser.error("Arguments `namespace_paths` and `project_ids` are mutually exclusive.")
+            arg_parser.error("Arguments `namespace_paths`, `project_ids` and `project_slugs` are mutually exclusive.")
+
+        if args["project_slugs"] and not args["namespace_paths"]:
+            arg_parser.error("Argument `project_slugs` should be specified with `namespace_paths` argument.")
         
         return args
 

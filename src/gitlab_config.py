@@ -31,11 +31,15 @@ class GitlabConfig:
         """
         result = []
 
-        if len(self.args["namespace_paths"]) > 0: 
+        if len(self.args["project_slugs"]) > 0:
+            for project_slug in self.args["project_slugs"]:
+                entry = self.printer.response_json(self.args, "projects/" + quote_plus(f'{self.args["namespace_paths"][0]}/{project_slug}'))
+                result.append(entry["id"])
+        elif len(self.args["namespace_paths"]) > 0: 
             result = [entry["id"] for entry in self.printer.response_json(self.args, "projects") 
                 if entry["path_with_namespace"].split("/")[0] in self.args["namespace_paths"]]
         elif len(self.args["project_ids"]) > 0:
-            result = self.args["project_ids"]
+            result = self.args["project_ids"]     
 
         return result
 
