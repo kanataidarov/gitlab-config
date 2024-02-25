@@ -3,8 +3,7 @@ from gitlab_config import GitlabConfig
 
 
 def debug_mode(gconf, selected_pids):
-    gconf.ps.update_protected_branches(selected_pids)
-    gconf.print_response()
+    print(gconf.ps.select_project_by_setting(selected_pids, {"merge_method": "merge"}))
 
 
 def main():

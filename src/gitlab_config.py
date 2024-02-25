@@ -26,7 +26,7 @@ class GitlabConfig:
 
     def select_project_ids(self):
         """Selects GitLab Ids of projects belonging to GitLab Groups specified in `namespace_paths` CL-argument.  
-        :return List of GitLab Ids of projects belonging to specified GitLab Groups. 
+        :return List of GitLab Ids of projects belonging to specified GitLab Groups or Project ids.
         """
         result = []
 
