@@ -207,7 +207,7 @@ class ProjectSettings:
         """Updates Push rules (in Repository Settings) for specified GitLab Ids. 
         :selected_pids List of GitLab Ids of projects belonging to specified GitLab Groups. 
         """
-        template = Template("""{"commit_message_regex": "$regex", "branch_name_regex": "$regex"}""")
+        template = Template("""{"branch_name_regex": "$regex"}""")
         push_rules = template.substitute(regex=self.args["push_rule_regex"])
 
         for project_id in selected_pids:
